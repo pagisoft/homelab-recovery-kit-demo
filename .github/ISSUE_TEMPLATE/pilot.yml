@@ -1,0 +1,37 @@
+name: Pilot tester application
+description: Volunteer to test the complete HomeLab Recovery Kit review candidate
+title: "Pilot application"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This issue is public. Please do not include your email address, passwords, hostnames, IP addresses, recovery codes, backups or completed kit files. We only need enough information to check whether the pilot fits your experience.
+  - type: dropdown
+    id: stack
+    attributes:
+      label: What do you maintain?
+      options:
+        - Proxmox VE
+        - Docker Compose
+        - NAS
+        - A mix of these
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: restore-scenario
+    attributes:
+      label: Which kind of restore would you like to plan?
+      description: Describe the category only, using no private details.
+      placeholder: "For example: rebuilding a host after disk failure"
+    validations:
+      required: true
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: Pilot conditions
+      options:
+        - label: I can spend about 45–60 minutes and use fictional data.
+          required: true
+        - label: I understand this application and any comments here are public.
+          required: true
