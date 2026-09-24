@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Build an offline recovery binder for your homelab.">
+    <title>HomeLab Recovery Kit — Offline binder builder</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="planner.js" defer></script>
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <header class="site-header">
+        <div class="wrap header-row">
+            <div class="brand"><span class="brand-mark">H</span><span>HomeLab <strong>Recovery Kit</strong></span></div>
+            <span class="offline-badge">Offline · no account · no uploads</span>
+        </div>
+    </header>
+    <main class="wrap">
+        <section class="hero">
+            <div class="eyebrow">RECOVERY BINDER BUILDER · PROTOTYPE 0.1</div>
+            <h1>When your homelab fails, know what to restore first.</h1>
+            <p>Create a practical recovery order, find gaps before an outage, and give someone else a clear starting point. This tool runs in your browser and keeps the kit in memory until you export it.</p>
+            <div class="toolbar no-print">
+                <button id="download" type="button" class="primary">Download kit JSON</button>
+                <label class="button secondary" for="import-file">Import kit JSON</label>
+                <input id="import-file" type="file" accept=".json,application/json" hidden>
+                <button id="print" type="button" class="secondary">Print / save PDF</button>
+                <button id="demo" type="button" class="quiet">Load example</button>
+            </div>
+            <p class="security-note"><strong>Keep passwords and recovery codes out of this file.</strong> Record where they can be found instead. Your exported kit may reveal details about your network and backups; store it accordingly.</p>
+        </section>
+
+        <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+
+        <div class="grid">
+            <div class="editor no-print">
+                <section class="panel">
+                    <div class="section-head"><span class="step">1</span><div><h2>Emergency starting point</h2><p>Information that stays useful when the lab is unavailable.</p></div></div>
+                    <div class="fields">
+                        <label>Lab name<input id="home-name" maxlength="100" placeholder="e.g. Smith family homelab"></label>
+                        <label>Owner or maintainer<input id="owner" maxlength="100" placeholder="Name or role"></label>
+                        <label>Where is an offline copy of this binder?<input id="docs-location" maxlength="500" placeholder="e.g. encrypted USB in home safe"></label>
+                        <label>Where are recovery keys and 2FA codes?<input id="keys-location" maxlength="500" placeholder="Location only; never enter the codes"></label>
+                        <label>How can someone access the backups?<textarea id="backup-access" maxlength="500" rows="2" placeholder="e.g. USB drive in safe; cloud account recovery sheet"></textarea></label>
+                        <label>Who can help if you are unavailable?<input id="contact" maxlength="500" placeholder="Name and contact method"></label>
+                    </div>
+                </section>
+
+                <section class="panel">
+                    <div class="section-head"><span class="step">2</span><div><h2>Systems and services</h2><p>Add the foundations first: router, storage, hypervisor, then apps.</p></div></div>
+                    <form id="asset-form">
+                        <input id="asset-id" type="hidden">
+                        <div class="fields two">
+                            <label>Name<input id="asset-name" required maxlength="100" placeholder="e.g. Proxmox host"></label>
+                            <label>Type<select id="asset-kind"><option>Network</option><option>Storage</option><option>Hypervisor</option><option>Container host</option><option>Identity / secrets</option><option>Application</option><option>Other</option></select></label>
+                            <label>Priority<select id="asset-criticality"><option value="critical">Critical</option><option value="important" selected>Important</option><option value="optional">Optional</option></select></label>
+                        </div>
+                        <fieldset><legend>Requires these components first</legend><div id="dependencies" class="dependency-list"><span class="muted">Add another component to create a dependency.</span></div></fieldset>
+                        <div class="fields">
+                            <label>Backup or source location<input id="asset-backup" maxlength="500" placeholder="e.g. PBS datastore on external NAS"></label>
+                            <label>Restore steps<textarea id="asset-restore" maxlength="2000" rows="3" placeholder="Short instructions or a link/path to the full runbook"></textarea></label>
+                            <label>How will you verify it works?<input id="asset-verify" maxlength="500" placeholder="e.g. Open test photo from restored library"></label>
+                        </div>
+                        <div class="form-actions">
+                            <button class="primary" id="asset-save" type="submit">Add component</button>
+                            <button class="quiet" id="asset-cancel" type="button" hidden>Cancel edit</button>
+                        </div>
+                    </form>
+                    <div id="asset-list" class="asset-list"></div>
+                </section>
+            </div>
+
+            <div class="output">
+                <section class="panel output-panel">
+                    <div class="section-head"><span class="step">3</span><div><h2>Recovery plan</h2><p>Review this before saving it outside the homelab.</p></div></div>
+                    <div id="plan-summary" class="summary"></div>
+                    <div id="plan-warnings" class="warnings"></div>
+                    <ol id="plan-steps" class="plan-steps"></ol>
+                </section>
+                <section class="panel family-panel">
+                    <div class="section-head"><span class="step">4</span><div><h2>Family handoff</h2><p>A starting point for someone without your technical knowledge.</p></div></div>
+                    <ol class="handoff-list">
+                        <li>Do not reset or erase any device while deciding what failed.</li>
+                        <li>Find the offline copy of this binder: <strong id="handoff-docs">not recorded</strong>.</li>
+                        <li>Find backup access instructions: <strong id="handoff-backups">not recorded</strong>.</li>
+                        <li>Find recovery keys and 2FA instructions: <strong id="handoff-keys">not recorded</strong>.</li>
+                        <li>Contact: <strong id="handoff-contact">not recorded</strong>.</li>
+                    </ol>
+                    <p class="muted">This page locates information. It does not contain passwords or replace a tested restore.</p>
+                </section>
+            </div>
+        </div>
+        <footer>HomeLab Recovery Kit · local prototype · Check your plan with a safe restore rehearsal.</footer>
+    </main>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "name": "homelab-recovery-kit",
+  "version": "0.1.0",
+  "private": true,
+  "description": "An offline recovery binder builder for homelab owners",
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check planner.js && node --check app.js"
+  }
+}
