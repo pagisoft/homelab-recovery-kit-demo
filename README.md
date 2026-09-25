@@ -4,6 +4,10 @@ An offline planner for people who run Proxmox VE, Docker Compose, a NAS or sever
 
 **Status:** evaluation prototype. This is a commercial project in development; the complete kit is being tested before sale. AI assisted with development and documentation, and the project owner reviews the result.
 
+## Try it online
+
+[Open the live demo](https://pagisoft.github.io/homelab-recovery-kit-demo/). GitHub Pages serves the static app; the entries you type stay in your browser page and are not uploaded by the app. Use fictional data for a first look. Download the repository to use the demo without an internet connection.
+
 ## Try the demo
 
 1. Use GitHub's **Code → Download ZIP**, then extract the archive. Open `index.html` from the extracted folder in a current desktop browser. No installation, server, account or internet connection is needed.
