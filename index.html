@@ -6,8 +6,8 @@
     <meta name="description" content="Build an offline recovery binder for your homelab.">
     <title>HomeLab Recovery Kit — Offline binder builder</title>
     <link rel="stylesheet" href="style.css">
-    <script src="planner.js" defer></script>
-    <script src="app.js" defer></script>
+    <script src="planner.js?v=20261007" defer></script>
+    <script src="app.js?v=20261007" defer></script>
 </head>
 <body>
     <header class="site-header">
@@ -18,7 +18,7 @@
     </header>
     <main class="wrap">
         <section class="hero">
-            <div class="eyebrow">RECOVERY BINDER BUILDER · PROTOTYPE 0.1</div>
+            <div class="eyebrow">RECOVERY BINDER BUILDER · PROTOTYPE 0.1.1</div>
             <h1>When your homelab fails, know what to restore first.</h1>
             <p>Create a practical recovery order, find gaps before an outage, and give someone else a clear starting point. This tool runs in your browser and keeps the kit in memory until you export it.</p>
             <div class="toolbar no-print">
@@ -27,7 +27,8 @@
                 <input id="import-file" type="file" accept=".json,application/json" hidden>
                 <button id="print" type="button" class="secondary">Print / save PDF</button>
                 <button id="demo" type="button" class="quiet">Load example</button>
-                <a class="button secondary" href="https://github.com/pagisoft/homelab-recovery-kit-demo/issues/new?template=pilot.yml" target="_blank" rel="noopener noreferrer">Volunteer for pilot</a>
+                <a class="button secondary" href="https://github.com/pagisoft/homelab-recovery-kit-demo/issues/new?template=pilot.yml" target="_blank" rel="noopener noreferrer">Volunteer via GitHub</a>
+                <a class="button secondary" href="mailto:info@pagisoft.pl?subject=HomeLab%20pilot">Volunteer via email</a>
             </div>
             <p class="security-note"><strong>Keep passwords and recovery codes out of this file.</strong> Record where they can be found instead. Your exported kit may reveal details about your network and backups; store it accordingly.</p>
         </section>
