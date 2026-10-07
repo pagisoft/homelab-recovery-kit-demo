@@ -22,6 +22,10 @@ The current full review candidate adds a device and address inventory, backup-jo
 
 ## Independent pilot
 
+**Start small:** take a 10-minute look at the live demo. Load the example, edit and save one fictional component, download and re-import the JSON, then inspect print preview. Tell us which step was confusing, whether another person could follow the order, and what important outage detail is missing.
+
+To volunteer for the full pilot or send short feedback, email **info@pagisoft.pl** with the subject **HomeLab pilot**. Mention only your broad setup (Proxmox, Docker Compose or NAS) and browser. A GitHub account is optional. We use your message to arrange this evaluation and reply; it does not subscribe you to marketing. Please do not send secrets, configurations or backup files.
+
 We are seeking **8–10 people who actually maintain a homelab** to test the complete kit. The exercise takes about 45–60 minutes, can use fictional data, and asks for candid feedback. There is no purchase requirement or need to share configurations or backup files. Start with [the pilot instructions](PILOT.md). To volunteer, open **Issues → New issue → Pilot tester application**. GitHub issues are public, so do not post an email address or private infrastructure details. We will arrange private delivery separately with selected volunteers.
 
 Please report defects using fictional data. The [evaluation permission](EVALUATION_LICENSE.md) applies to this demo only. The complete kit has separate customer terms.

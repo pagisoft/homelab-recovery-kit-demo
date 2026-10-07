@@ -4,6 +4,8 @@ We need feedback from people who maintain a Proxmox VE, Docker Compose or NAS se
 
 ## Before opening the tool
 
+Not ready for the full exercise? Try the live demo for about 10 minutes first: load the example, edit and save a fictional component, export and import the JSON, and inspect print preview. Short feedback is welcome at **info@pagisoft.pl** (subject **HomeLab pilot**) or in a public GitHub issue using fictional data. Email applications need only your broad setup and browser; no GitHub account is required. We use messages to coordinate the pilot and reply, without adding you to a marketing list.
+
 Think of one real outage or restore that would be painful in your setup. You can describe the problem in broad terms; do not share your actual network diagram, hostnames, keys or backups.
 
 ## Tasks

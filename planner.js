@@ -12,18 +12,22 @@
     const priority = { critical: 0, important: 1, optional: 2 };
 
     function cleanText(value, maxLength = 500) {
-        return typeof value === "string" ? value.trim().slice(0, maxLength) : "";
+        const text = typeof value === "string" ? value.trim() : "";
+        if (text.length > maxLength) {
+            throw new Error("A text field exceeds its maximum length (" + maxLength + ").");
+        }
+        return text;
     }
 
     function normalizeAsset(value) {
         if (!value || typeof value !== "object" || Array.isArray(value)) {
-            return null;
+            throw new Error("Invalid component record.");
         }
 
         const id = cleanText(value.id, 80);
         const name = cleanText(value.name, 100);
         if (!id || !name) {
-            return null;
+            throw new Error("Every component needs an ID and name.");
         }
 
         return {
@@ -45,7 +49,10 @@
             throw new Error("Unsupported kit file. Expected schema version 1.");
         }
 
-        const assets = Array.isArray(raw.assets) ? raw.assets.map(normalizeAsset).filter(Boolean) : [];
+        if (!Array.isArray(raw.assets)) {
+            throw new Error("The components field must be an array.");
+        }
+        const assets = raw.assets.map(normalizeAsset);
         if (assets.length > 100) {
             throw new Error("This kit has too many components (maximum 100).");
         }
@@ -90,6 +97,7 @@
             for (const dependencyId of asset.dependsOn) {
                 if (!byId.has(dependencyId)) {
                     missing.push({ asset: asset.name, dependencyId });
+                    indegree.set(asset.id, indegree.get(asset.id) + 1);
                     continue;
                 }
                 indegree.set(asset.id, indegree.get(asset.id) + 1);

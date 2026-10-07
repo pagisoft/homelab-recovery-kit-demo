@@ -10,6 +10,8 @@ const emptyKit = () => ({
 });
 
 let kit = emptyKit();
+let pendingAsset = false;
+let isDirty = false;
 const $ = id => document.getElementById(id);
 const fieldMap = {
     "home-name": ["homeName"],
@@ -58,6 +60,7 @@ function getAssetForm() {
 }
 
 function resetAssetForm() {
+    pendingAsset = false;
     $("asset-form").reset();
     $("asset-id").value = "";
     $("asset-save").textContent = "Add component";
@@ -86,6 +89,10 @@ function renderDependencies(selected = []) {
 }
 
 function editAsset(id) {
+    if (pendingAsset && !confirm("Discard the unsaved component form?")) {
+        return;
+    }
+    pendingAsset = false;
     const asset = kit.assets.find(item => item.id === id);
     if (!asset) {
         return;
@@ -105,14 +112,21 @@ function editAsset(id) {
 }
 
 function removeAsset(id) {
+    if (pendingAsset) {
+        notify("Save or cancel the component form before removing a component.", true);
+        return;
+    }
+    const dependents = kit.assets.filter(item => item.dependsOn.includes(id));
+    if (dependents.length) {
+        notify("Cannot remove a component required by: " + dependents.map(item => item.name).join(", ") + ". Edit those dependencies first.", true);
+        return;
+    }
     const asset = kit.assets.find(item => item.id === id);
     if (!asset || !confirm('Remove "' + asset.name + '" from this kit?')) {
         return;
     }
-    kit.assets = kit.assets.filter(item => item.id !== id).map(item => ({
-        ...item,
-        dependsOn: item.dependsOn.filter(dependency => dependency !== id)
-    }));
+    kit.assets = kit.assets.filter(item => item.id !== id);
+    isDirty = true;
     if ($("asset-id").value === id) {
         resetAssetForm();
     }
@@ -210,6 +224,17 @@ function fillFields() {
 }
 
 function download() {
+    if (pendingAsset) {
+        notify("Save or cancel the component form before downloading.", true);
+        return;
+    }
+    try {
+        RecoveryPlanner.normalizeKit(kit);
+    }
+    catch (error) {
+        notify(error.message, true);
+        return;
+    }
     kit.updated = new Date().toISOString();
     const blob = new Blob([JSON.stringify(kit, null, 2) + "\n"], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -219,6 +244,7 @@ function download() {
     document.body.append(link);
     link.click();
     link.remove();
+    isDirty = false;
     setTimeout(() => URL.revokeObjectURL(url), 1000);
     notify("Kit downloaded. Store a copy outside the homelab and rehearse a restore.");
 }
@@ -233,7 +259,11 @@ async function importFile(file) {
     }
     try {
         const imported = RecoveryPlanner.normalizeKit(JSON.parse(await file.text()));
+        if ((isDirty || pendingAsset) && !confirm("Replace your unsaved work with the imported kit?")) {
+            return;
+        }
         kit = imported;
+        isDirty = false;
         fillFields();
         resetAssetForm();
         renderAll();
@@ -245,7 +275,7 @@ async function importFile(file) {
 }
 
 function loadExample() {
-    if ((kit.assets.length || kit.homeName) && !confirm("Replace the current unsaved kit with the example?")) {
+    if ((isDirty || pendingAsset || kit.assets.length || kit.homeName) && !confirm("Replace the current kit and unsaved form with the example?")) {
         return;
     }
     kit = RecoveryPlanner.normalizeKit({
@@ -268,12 +298,14 @@ function loadExample() {
     });
     fillFields();
     resetAssetForm();
+    isDirty = true;
     renderAll();
     notify("Example loaded. It is illustrative; run real restore tests for your own setup.");
 }
 
 for (const [id, path] of Object.entries(fieldMap)) {
     $(id).addEventListener("input", event => {
+        isDirty = true;
         if (path.length === 1) {
             kit[path[0]] = event.target.value;
         }
@@ -294,6 +326,15 @@ $("asset-form").addEventListener("submit", event => {
         return;
     }
     const existing = kit.assets.findIndex(item => item.id === asset.id);
+    try {
+        RecoveryPlanner.normalizeKit({ ...kit, assets: existing === -1
+            ? [...kit.assets, asset]
+            : kit.assets.map((item, index) => index === existing ? asset : item) });
+    }
+    catch (error) {
+        notify(error.message, true);
+        return;
+    }
     if (existing === -1) {
         kit.assets.push(asset);
     }
@@ -301,6 +342,7 @@ $("asset-form").addEventListener("submit", event => {
         kit.assets[existing] = asset;
     }
     resetAssetForm();
+    isDirty = true;
     renderAll();
     clearNotice();
 });
@@ -310,7 +352,26 @@ $("import-file").addEventListener("change", event => {
     importFile(event.target.files[0]);
     event.target.value = "";
 });
-$("print").addEventListener("click", () => window.print());
+$("print").addEventListener("click", () => {
+    if (pendingAsset) {
+        notify("Save or cancel the component form before printing.", true);
+        return;
+    }
+    window.print();
+});
 $("demo").addEventListener("click", loadExample);
+for (const eventName of ["input", "change"]) {
+    $("asset-form").addEventListener(eventName, () => {
+        pendingAsset = true;
+        $("asset-cancel").hidden = false;
+        notify("Unsaved component form: save or cancel before exporting or printing.");
+    });
+}
+window.addEventListener("beforeunload", event => {
+    if (isDirty || pendingAsset) {
+        event.preventDefault();
+        event.returnValue = "";
+    }
+});
 
 renderAll();
