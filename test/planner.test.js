@@ -41,3 +41,15 @@ test("import rejects malformed files and duplicate IDs", () => {
     assert.throws(() => normalizeKit({ schema: 2, assets: [] }), /Unsupported/);
     assert.throws(() => normalizeKit({ schema: 1, assets: [asset("a"), asset("a")] }), /duplicate/);
 });
+
+test("missing prerequisite blocks its downstream chain", () => {
+    const result = plan(normalizeKit({ schema: 1, assets: [asset("host", ["missing"]), asset("app", ["host"]), asset("router")] }));
+    assert.deepEqual(result.ordered.map(item => item.id), ["router"]);
+    assert.deepEqual(result.cycles, ["host", "app"]);
+});
+
+test("invalid records and overlong text reject the whole import", () => {
+    assert.throws(() => normalizeKit({ schema: 1, assets: [asset("ok"), null] }), /Invalid/);
+    assert.throws(() => normalizeKit({ schema: 1, assets: [{ ...asset("ok"), restoreNotes: "x".repeat(2001) }] }), /maximum length/);
+    assert.throws(() => normalizeKit({ schema: 1, assets: {} }), /array/);
+});
